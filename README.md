@@ -22,10 +22,27 @@ Before you start the taskbar progressbar, you must show the stage
 ```
 stage.show();
 ```
-Now you can everything that the taskbar progressbar can do:
-For example you can show a progress:
+Now you can everything that the taskbar progressbar can do, for example you can show a progress:
 ```
 taskProgressbar.showOtherProgress(50, 100, TaskbarProgressbar.TaskbarProgressbarType.NORMAL);
 ```
 It will creates this view at the taskbar:
-![](https://i.stack.imgur.com/IG7v5.png)
+![](https://i.stack.imgur.com/IG7v5.png).
+
+There are 5 types of the taskbar progressbar: 
+
+`TaskbarProgressbar.TaskbarProgressbarType.NORMAL` - It is the normal progressbar with the green color
+`TaskbarProgressbar.TaskbarProgressbarType.ERROR` - It is the error progressbar with the red color.
+`TaskbarProgressbar.TaskbarProgressbarType.PAUSED` - It is the paused progressbar with the yellow color.
+
+`TaskbarProgressbar.TaskbarProgressbarType.NOPROGRESS` - It is the empty progressbar
+`TaskbarProgressbar.TaskbarProgressbarType.INDETERMINATE` - It is the indeterminate progressbar. It doesn't show any fix progress.
+
+If you want to show an indeterminate progress:
+```
+taskbarProgressbar.showIndeterminateProgress();
+```
+If you want to stop the progress:
+```
+taskbarProgressbar.stopProgress();
+```
