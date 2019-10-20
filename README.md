@@ -22,7 +22,7 @@ Before you start the taskbar progressbar, you must show the stage
 ```
 stage.show();
 ```
-Now you can everything that the taskbar progressbar can do, for example you can show a progress:
+Now you can do everything that the taskbar progressbar can do, for example you can show a progress:
 ```
 taskProgressbar.showOtherProgress(50, 100, TaskbarProgressbar.TaskbarProgressbarType.NORMAL);
 ```
