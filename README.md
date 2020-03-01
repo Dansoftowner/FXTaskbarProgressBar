@@ -10,20 +10,20 @@ You can download the jar file from the releases.
 ## How to use it
 
 Create your stage:
-```
+```java
 Stage stage = new Stage();
 ```
 
 Then, you have to create the TaskbarProgressbar object:
-```
+```java
 TaskbarProgressbar taskProgressbar = new TaskbarProgressbar(stage);
 ```
 Before you start the taskbar progressbar, you must show the stage
-```
+```java
 stage.show();
 ```
 Now you can do everything that the taskbar progressbar can do, for example you can show a progress:
-```
+```java
 taskProgressbar.showOtherProgress(50, 100, TaskbarProgressbar.TaskbarProgressbarType.NORMAL);
 ```
 It will creates this view at the taskbar:
@@ -39,10 +39,10 @@ There are 5 types of the taskbar progressbar:
 `TaskbarProgressbar.TaskbarProgressbarType.INDETERMINATE` - It is the indeterminate progressbar. It doesn't show any fix progress.
 
 If you want to show an indeterminate progress:
-```
+```java
 taskbarProgressbar.showIndeterminateProgress();
 ```
 If you want to stop the progress:
-```
+```java
 taskbarProgressbar.stopProgress();
 ```
