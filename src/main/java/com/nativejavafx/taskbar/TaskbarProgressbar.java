@@ -19,7 +19,7 @@ public abstract class TaskbarProgressbar {
      * Defines the types of the taskbar progressbars
      * that can be used on a Windows 7+ system.
      */
-    public enum TaskbarProgressbarType {
+    public enum Type {
         ERROR(ITaskbarList3.TbpFlag.TBPF_ERROR),
         INDETERMINATE(ITaskbarList3.TbpFlag.TBPF_INDETERMINATE),
         NO_PROGRESS(ITaskbarList3.TbpFlag.TBPF_NOPROGRESS),
@@ -28,7 +28,7 @@ public abstract class TaskbarProgressbar {
 
         private final ITaskbarList3.TbpFlag bridjPair;
 
-        TaskbarProgressbarType(ITaskbarList3.TbpFlag bridjPair) {
+        Type(ITaskbarList3.TbpFlag bridjPair) {
             this.bridjPair = bridjPair;
         }
 
@@ -55,13 +55,13 @@ public abstract class TaskbarProgressbar {
      * @param type the type of the progress; must't be null
      * @throws NullPointerException if the type is null
      */
-    public abstract void showCustomProgress(long done, long max, TaskbarProgressbarType type);
+    public abstract void showCustomProgress(long done, long max, Type type);
 
     /**
      * Shows a 100% error progress
      */
     public void showFullErrorProgress() {
-        this.showCustomProgress(100, 100, TaskbarProgressbarType.ERROR);
+        this.showCustomProgress(100, 100, Type.ERROR);
     }
 
 
@@ -119,7 +119,7 @@ public abstract class TaskbarProgressbar {
      * Shows a custom progress on the taskbar.
      *
      * <p><br>
-     * Actually calls the {@link TaskbarProgressbar#showCustomProgress(int, long, long, TaskbarProgressbarType)}
+     * Actually calls the {@link TaskbarProgressbar#showCustomProgress(int, long, long, Type)}
      * method with the index of the stage.
      *
      * @param stage the javaFX stage to show the progress on; mustn't be null
@@ -127,9 +127,9 @@ public abstract class TaskbarProgressbar {
      * @param max specifies the max, 100% value of the loading
      * @param type the type of the progress; mustn't be null
      * @throws NullPointerException if the stage or the type is null
-     * @see TaskbarProgressbar#showCustomProgress(int, long, long, TaskbarProgressbarType)
+     * @see TaskbarProgressbar#showCustomProgress(int, long, long, Type)
      */
-    public static void showCustomProgress(Stage stage, long done, long max, TaskbarProgressbarType type) {
+    public static void showCustomProgress(Stage stage, long done, long max, Type type) {
         showCustomProgress(getIndexOfStage(stage), done, max, type);
     }
 
@@ -141,7 +141,7 @@ public abstract class TaskbarProgressbar {
         long hwndVal = getHWNDValueOf(windowIndex);
         progressbar.setHwnd(Pointer.pointerToAddress(hwndVal));
 
-        progressbar.getService().execute(() -> progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), TaskbarProgressbarType.NO_PROGRESS.getBridjPair()));
+        progressbar.getService().execute(() -> progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), Type.NO_PROGRESS.getBridjPair()));
     }
 
     @SuppressWarnings({"unchecked", "deprecation"})
@@ -151,11 +151,11 @@ public abstract class TaskbarProgressbar {
         long hwndVal = getHWNDValueOf(windowIndex);
         progressbar.setHwnd(Pointer.pointerToAddress(hwndVal));
 
-        progressbar.getService().execute(() -> progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), TaskbarProgressbarType.INDETERMINATE.getBridjPair()));
+        progressbar.getService().execute(() -> progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), Type.INDETERMINATE.getBridjPair()));
     }
 
     @SuppressWarnings({"unchecked", "deprecation"})
-    public static void showCustomProgress(int windowIndex, long done, long endValue, TaskbarProgressbarType type) {
+    public static void showCustomProgress(int windowIndex, long done, long endValue, Type type) {
         TaskbarProgressbarImpl progressbar = new TaskbarProgressbarImpl();
 
         long hwndVal = getHWNDValueOf(windowIndex);
@@ -176,7 +176,7 @@ public abstract class TaskbarProgressbar {
 
         progressbar.getService().execute(() -> {
             progressbar.getList().SetProgressValue((Pointer) progressbar.getHwnd(), 100, 100);
-            progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), TaskbarProgressbarType.ERROR.getBridjPair());
+            progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), Type.ERROR.getBridjPair());
         });
     }
 

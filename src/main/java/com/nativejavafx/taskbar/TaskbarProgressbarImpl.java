@@ -67,7 +67,7 @@ class TaskbarProgressbarImpl extends TaskbarProgressbar {
         long hwndVal = com.sun.glass.ui.Window.getWindows().get(getIndexOfStage(stage)).getNativeWindow();
         hwnd = Pointer.pointerToAddress(hwndVal);
 
-        es.execute(() -> list.SetProgressState((Pointer) hwnd, TaskbarProgressbar.TaskbarProgressbarType.NO_PROGRESS.getBridjPair()));
+        es.execute(() -> list.SetProgressState((Pointer) hwnd, Type.NO_PROGRESS.getBridjPair()));
     }
 
     @Override
@@ -76,12 +76,12 @@ class TaskbarProgressbarImpl extends TaskbarProgressbar {
         long hwndVal = com.sun.glass.ui.Window.getWindows().get(getIndexOfStage(stage)).getNativeWindow();
         hwnd = Pointer.pointerToAddress(hwndVal);
 
-        es.execute(() -> list.SetProgressState((Pointer) hwnd, TaskbarProgressbar.TaskbarProgressbarType.INDETERMINATE.getBridjPair()));
+        es.execute(() -> list.SetProgressState((Pointer) hwnd, Type.INDETERMINATE.getBridjPair()));
     }
 
     @Override
     @SuppressWarnings({"unchecked", "deprecation"})
-    public void showCustomProgress(long startValue, long endValue, TaskbarProgressbar.TaskbarProgressbarType type) {
+    public void showCustomProgress(long startValue, long endValue, Type type) {
         long hwndVal = com.sun.glass.ui.Window.getWindows().get(getIndexOfStage(stage)).getNativeWindow();
         hwnd = Pointer.pointerToAddress(hwndVal);
 

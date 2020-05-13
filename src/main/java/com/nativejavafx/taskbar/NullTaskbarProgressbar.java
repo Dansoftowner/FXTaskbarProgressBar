@@ -14,7 +14,7 @@ class NullTaskbarProgressbar extends TaskbarProgressbar {
     }
 
     @Override
-    public void showCustomProgress(long done, long max, TaskbarProgressbarType type) {
+    public void showCustomProgress(long done, long max, Type type) {
     }
 
     @Override

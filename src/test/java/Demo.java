@@ -15,7 +15,7 @@ public class Demo extends Application{
         launch(args);
     }
     
-    private TaskbarProgressbar.TaskbarProgressbarType actualSelectedType;
+    private TaskbarProgressbar.Type actualSelectedType;
 
     @Override
     public void start(Stage primaryStage) {
@@ -45,17 +45,17 @@ public class Demo extends Application{
         
         paused.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue)
-                actualSelectedType = TaskbarProgressbar.TaskbarProgressbarType.PAUSED;
+                actualSelectedType = TaskbarProgressbar.Type.PAUSED;
         });
         
         normal.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue)
-                actualSelectedType = TaskbarProgressbar.TaskbarProgressbarType.NORMAL;
+                actualSelectedType = TaskbarProgressbar.Type.NORMAL;
         });
         
         error.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue)
-                actualSelectedType = TaskbarProgressbar.TaskbarProgressbarType.ERROR;
+                actualSelectedType = TaskbarProgressbar.Type.ERROR;
         });
         
         normal.setSelected(true);
@@ -72,6 +72,6 @@ public class Demo extends Application{
         stage.setScene(new Scene(vBox));
         stage.show();
         
-        
+        if (TaskbarProgressbar.isSupported())
     }
 }
