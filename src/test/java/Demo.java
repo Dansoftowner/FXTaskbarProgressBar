@@ -71,7 +71,5 @@ public class Demo extends Application{
         
         stage.setScene(new Scene(vBox));
         stage.show();
-        
-        if (TaskbarProgressbar.isSupported())
     }
 }

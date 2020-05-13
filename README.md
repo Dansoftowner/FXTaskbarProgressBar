@@ -1,4 +1,4 @@
-# JavaFXTaskbarProgressBar
+# ![JavaFXTaskbarProgressbar](images/logo.png)
 ## This library allows you to add native taskbar-progressbar functionality to your JavaFX stages.
 The library uses another library called [bridj](https://github.com/nativelibs4java/BridJ) that 
 can give access to native operations in java. With the Bridj library you can easily add taskbar progressbars 
@@ -77,7 +77,7 @@ To stop the progress:
 ```java
 TaskbarProgressbar.stopProgress(primaryStage);
 ```
-#### Through instantiation
+#### Through instantiation *(the preferred way)*
 Firstly (after you imported the necessary class) create a `TaskbarProgressbar` instance:
 ```java
 TaskbarProgressbar progressbar = TaskbarProgressbar.createInstance(primaryStage);
@@ -104,8 +104,6 @@ To stop the progress:
 ```java
 progressbar.stopProgress();
 ```
-#### Full example
-
 
 ## More screenshots
 Some more screenshots about what can you do with this library
@@ -115,3 +113,7 @@ Code: `progressbar.showCustomProgress(70, 100, TaskbarProgressbar.Type.PAUSED);`
 * An error progress example:<br>
 Code: `progressbar.showCustomProgress(40, 100, TaskbarProgressbar.Type.ERROR);`<br>
 ![Paused progress](images/error-progress.jpg)
+
+## Support
+If you like this library please give me a star! It's very important for me 
+because it keeps me motivated to work on this library. Thank you!
