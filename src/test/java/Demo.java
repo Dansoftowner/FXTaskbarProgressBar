@@ -1,10 +1,7 @@
 import com.nativejavafx.taskbar.TaskbarProgressbar;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -63,7 +60,7 @@ public class Demo extends Application{
         ToggleGroup tg = new ToggleGroup();
         tg.getToggles().addAll(paused, error, normal);
         
-        VBox vBox = new VBox(slider, paused, normal, error);
+        VBox vBox = new VBox(slider, paused, normal, error, new Label("java version: " + System.getProperty("java.version")));
         
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             taskbarProgressbar2.showCustomProgress((long)slider.getValue(), (long) slider.getMax(), actualSelectedType);

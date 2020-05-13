@@ -1,10 +1,7 @@
 package com.nativejavafx.taskbar;
 
-import com.sun.javafx.stage.StageHelper;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-
-import java.util.Objects;
 
 /**
  * Provides some utility methods
@@ -18,7 +15,7 @@ class Utils {
      * @return the index
      */
     static int getIndexOfStage(Stage stage) {
-        return StageHelper.getStages().indexOf(stage);
+        return Window.getWindows().indexOf(stage);
     }
 
 
