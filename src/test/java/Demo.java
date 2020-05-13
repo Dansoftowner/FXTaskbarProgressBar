@@ -9,67 +9,75 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-
 public class Demo extends Application{
     public static void main(String[] args) {
         launch(args);
     }
-    
-    private TaskbarProgressbar.Type actualSelectedType;
+
+    private TaskbarProgressbar taskbarProgressbar;
+    private TaskbarProgressbar.Type actualSelectedType =
+            TaskbarProgressbar.Type.NORMAL;
 
     @Override
     public void start(Stage primaryStage) {
-        
-        TaskbarProgressbar taskProgressbar = TaskbarProgressbar.createInstance(primaryStage);
-        
-        Button btn = new Button("Stop");
-        btn.setOnAction((event) -> {
-            taskProgressbar.stopProgress();
+        taskbarProgressbar = TaskbarProgressbar.createInstance(primaryStage);
+
+        Slider slider = getSlider();
+
+        Button stopperBtn = new Button("Stop");
+        stopperBtn.setOnAction((event) -> {
+            slider.setValue(0);
+            taskbarProgressbar.stopProgress();
         });
-        
-        primaryStage.setScene(new Scene(new StackPane(btn)));
+
+        Button indeterminateBtn = new Button("Indeterminate");
+        indeterminateBtn.setOnAction(event -> {
+            slider.setValue(0);
+            taskbarProgressbar.showIndeterminateProgress();
+        });
+
+        VBox bottom = new VBox(10, stopperBtn, indeterminateBtn);
+        VBox vBox = new VBox(10, slider, getToggleGroup(), bottom);
+
+        primaryStage.setTitle("Test FXTaskbarProgressbar");
+        primaryStage.setScene(new Scene(vBox));
         primaryStage.show();
-        
-        taskProgressbar.showIndeterminateProgress();
-        
-        
-        Stage stage = new Stage();
-        
-        TaskbarProgressbar taskbarProgressbar2 = TaskbarProgressbar.createInstance(stage);
-        
+
+        taskbarProgressbar.showIndeterminateProgress();
+    }
+
+    private Slider getSlider() {
         Slider slider = new Slider(0, 100, 0);
-        
+
+        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            taskbarProgressbar.showCustomProgress((long) slider.getValue(), (long) slider.getMax(), actualSelectedType);
+        });
+
+        return slider;
+    }
+
+    private VBox getToggleGroup() {
         RadioButton paused = new RadioButton("Paused");
         RadioButton normal = new RadioButton("Normal");
         RadioButton error = new RadioButton("Error");
-        
-        paused.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue)
-                actualSelectedType = TaskbarProgressbar.Type.PAUSED;
+
+        paused.setOnAction(event -> {
+            if (paused.isSelected()) this.actualSelectedType = TaskbarProgressbar.Type.PAUSED;
         });
-        
-        normal.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue)
-                actualSelectedType = TaskbarProgressbar.Type.NORMAL;
+
+        normal.setOnAction(event -> {
+            if (normal.isSelected()) this.actualSelectedType = TaskbarProgressbar.Type.NORMAL;
         });
-        
-        error.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue)
-                actualSelectedType = TaskbarProgressbar.Type.ERROR;
+
+        error.setOnAction(event -> {
+            if (error.isSelected()) this.actualSelectedType = TaskbarProgressbar.Type.ERROR;
         });
-        
+
+        ToggleGroup group = new ToggleGroup();
+        group.getToggles().addAll(paused, error, normal);
+
         normal.setSelected(true);
-        
-        ToggleGroup tg = new ToggleGroup();
-        tg.getToggles().addAll(paused, error, normal);
-        
-        VBox vBox = new VBox(slider, paused, normal, error);
-        
-        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            taskbarProgressbar2.showCustomProgress((long)slider.getValue(), (long) slider.getMax(), actualSelectedType);
-        });
-        
-        stage.setScene(new Scene(vBox));
-        stage.show();
+
+        return new VBox(paused, normal, error);
     }
 }
