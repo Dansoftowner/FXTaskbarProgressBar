@@ -1,13 +1,17 @@
 apply plugin: 'java'
 
-sourceCompatibility = '1.8'
+sourceCompatibility = '11'
+
+compileJava {
+    options.compilerArgs += ['--add-exports', 'javafx.graphics/com.sun.glass.ui=ALL-UNNAMED']
+}
 
 jar {
     manifest {
     }
     
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+     //   configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
