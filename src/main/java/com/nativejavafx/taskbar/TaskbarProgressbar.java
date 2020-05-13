@@ -1,182 +1,199 @@
 package com.nativejavafx.taskbar;
 
-import com.sun.javafx.stage.StageHelper;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javafx.stage.Stage;
 import org.bridj.Pointer;
-import org.bridj.cpp.com.COMRuntime;
 import org.bridj.cpp.com.shell.ITaskbarList3;
 
-public final class TaskbarProgressbar {
+import static com.nativejavafx.taskbar.Utils.*;
 
-    private final Stage stage;
+/**
+ * A TaskbarProgressbar object can add native (Windows 7+) taskbar
+ * progressbar functionality to {@link Stage} objects.
+ *
+ * <p>
+ * Can be used by instantiation and by static methods as well.
+ */
+public abstract class TaskbarProgressbar {
 
-    private ExecutorService es;
-    private ITaskbarList3 list;
-    private Pointer<?> hwnd;
-
-    private TaskbarProgressbar() {
-        stage = null;
-
-        es = Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r);
-
-            t.setDaemon(true);
-
-            return t;
-        });
-
-        es.execute(() -> {
-            try {
-                list = COMRuntime.newInstance(ITaskbarList3.class);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public TaskbarProgressbar(Stage stage) {
-        this.stage = stage;
-
-        es = Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r);
-
-            t.setDaemon(true);
-
-            return t;
-        });
-
-        es.execute(() -> {
-            try {
-                list = COMRuntime.newInstance(ITaskbarList3.class);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public void close() {
-        es.submit(() -> list.Release());
-    }
-
+    /**
+     * Defines the types of the taskbar progressbars
+     * that can be used on a Windows 7+ system.
+     */
     public enum TaskbarProgressbarType {
-        ERROR {
-            @Override
-            ITaskbarList3.TbpFlag getPair() {
-                return ITaskbarList3.TbpFlag.TBPF_ERROR;
-            }
-        },
-        INDETERMINATE {
-            @Override
-            ITaskbarList3.TbpFlag getPair() {
-                return ITaskbarList3.TbpFlag.TBPF_INDETERMINATE;
-            }
-        },
-        NOPROGRESS {
-            @Override
-            ITaskbarList3.TbpFlag getPair() {
-                return ITaskbarList3.TbpFlag.TBPF_NOPROGRESS;
-            }
-        },
-        NORMAL {
-            @Override
-            ITaskbarList3.TbpFlag getPair() {
-                return ITaskbarList3.TbpFlag.TBPF_NORMAL;
-            }
-        },
-        PAUSED {
-            @Override
-            ITaskbarList3.TbpFlag getPair() {
-                return ITaskbarList3.TbpFlag.TBPF_PAUSED;
-            }
-        };
+        ERROR(ITaskbarList3.TbpFlag.TBPF_ERROR),
+        INDETERMINATE(ITaskbarList3.TbpFlag.TBPF_INDETERMINATE),
+        NO_PROGRESS(ITaskbarList3.TbpFlag.TBPF_NOPROGRESS),
+        NORMAL(ITaskbarList3.TbpFlag.TBPF_NORMAL),
+        PAUSED (ITaskbarList3.TbpFlag.TBPF_PAUSED);
 
-        abstract ITaskbarList3.TbpFlag getPair();
+        private final ITaskbarList3.TbpFlag bridjPair;
+
+        TaskbarProgressbarType(ITaskbarList3.TbpFlag bridjPair) {
+            this.bridjPair = bridjPair;
+        }
+
+        public ITaskbarList3.TbpFlag getBridjPair() {
+            return this.bridjPair;
+        }
     }
 
-    public void stopProgress() {
-        long hwndVal = com.sun.glass.ui.Window.getWindows().get(StageHelper.getStages().indexOf(stage)).getNativeWindow();
-        hwnd = Pointer.pointerToAddress(hwndVal);
+    /**
+     * Stops the progress on the taskbar
+     */
+    public abstract void stopProgress();
 
-        es.execute(() -> {
-            list.SetProgressState((Pointer) hwnd, TaskbarProgressbarType.NOPROGRESS.getPair());
-        });
+    /**
+     * Shows an indeterminate progress on the taskbar
+     */
+    public abstract void showIndeterminateProgress();
+
+    /**
+     * Shows a custom progress on the taskbar
+     *
+     * @param done the done value of the max value
+     * @param max the max "100%" value
+     * @param type the type of the progress; must't be null
+     * @throws NullPointerException if the type is null
+     */
+    public abstract void showCustomProgress(long done, long max, TaskbarProgressbarType type);
+
+    /**
+     * Shows a 100% error progress
+     */
+    public void showFullErrorProgress() {
+        this.showCustomProgress(100, 100, TaskbarProgressbarType.ERROR);
     }
 
-    public void showIndeterminateProgress() {
-        long hwndVal = com.sun.glass.ui.Window.getWindows().get(StageHelper.getStages().indexOf(stage)).getNativeWindow();
-        hwnd = Pointer.pointerToAddress(hwndVal);
 
-        es.execute(() -> {
-            list.SetProgressState((Pointer) hwnd, TaskbarProgressbarType.INDETERMINATE.getPair());
-        });
+    public abstract void closeOperations();
+
+    /**
+     * Creates a {@link TaskbarProgressbar} object.
+     *
+     * <p>
+     * At first it checks that the taskbar progressbar functionality
+     * is supported on the current system: if it is then it will
+     * return a fully featured TaskbarProgressbar; otherwise
+     * it will return a taskbar-progressbar object that actually
+     * doesn't do anything.
+     *
+     * @param stage the stage to get the progressbar on the taskbar to
+     * @return the taskbar-progressbar object
+     */
+    public static TaskbarProgressbar createInstance(Stage stage) {
+        if (isSupported()) return new TaskbarProgressbarImpl(stage);
+        else return new NullTaskbarProgressbar();
     }
 
-    public void showOtherProgress(long startValue, long endValue, TaskbarProgressbarType type) {
-        long hwndVal = com.sun.glass.ui.Window.getWindows().get(StageHelper.getStages().indexOf(stage)).getNativeWindow();
-        hwnd = Pointer.pointerToAddress(hwndVal);
-
-        es.execute(() -> {
-            list.SetProgressValue((Pointer) hwnd, startValue, endValue);
-            list.SetProgressState((Pointer) hwnd, type.getPair());
-        });
+    /**
+     * Stops the taskbar-progress on the given stage.
+     *
+     * <p><br>
+     * Actually calls the {@link TaskbarProgressbar#stopProgress(int)}
+     * method with the index of the stage.
+     *
+     * @param stage the javaFX stage to stop the progress on; mustn't be null
+     * @throws NullPointerException if the stage is null
+     * @see TaskbarProgressbar#stopProgress(int) 
+     */
+    public static void stopProgress(Stage stage) {
+        stopProgress(getIndexOfStage(stage));
     }
 
-    public void showErrorProgress() {
-        long hwndVal = com.sun.glass.ui.Window.getWindows().get(StageHelper.getStages().indexOf(stage)).getNativeWindow();
-        hwnd = Pointer.pointerToAddress(hwndVal);
-
-        es.execute(() -> {
-            list.SetProgressValue((Pointer) hwnd, 100, 100);
-            list.SetProgressState((Pointer) hwnd, TaskbarProgressbarType.ERROR.getPair());
-        });
+    /**
+     * Shows an indeterminate taskbar-progress on the given stage.
+     *
+     * <p><br>
+     * Actually calls the {@link TaskbarProgressbar#showIndeterminateProgress(int)}
+     * method with the index of the stage.
+     *
+     * @param stage the javaFX stage to show the progress on; mustn't be null
+     * @throws NullPointerException if the stage is null
+     * @see TaskbarProgressbar#showIndeterminateProgress(int)
+     */
+    public static void showIndeterminateProgress(Stage stage) {
+        showIndeterminateProgress(getIndexOfStage(stage));
     }
 
+    /**
+     * Shows a custom progress on the taskbar.
+     *
+     * <p><br>
+     * Actually calls the {@link TaskbarProgressbar#showCustomProgress(int, long, long, TaskbarProgressbarType)}
+     * method with the index of the stage.
+     *
+     * @param stage the javaFX stage to show the progress on; mustn't be null
+     * @param done specifies the actual "done" value of the max value
+     * @param max specifies the max, 100% value of the loading
+     * @param type the type of the progress; mustn't be null
+     * @throws NullPointerException if the stage or the type is null
+     * @see TaskbarProgressbar#showCustomProgress(int, long, long, TaskbarProgressbarType)
+     */
+    public static void showCustomProgress(Stage stage, long done, long max, TaskbarProgressbarType type) {
+        showCustomProgress(getIndexOfStage(stage), done, max, type);
+    }
+
+
+    @SuppressWarnings({"deprecation", "unchecked"})
     public static void stopProgress(int windowIndex) {
-        TaskbarProgressbar progressbar = new TaskbarProgressbar();
+        TaskbarProgressbarImpl progressbar = new TaskbarProgressbarImpl();
 
-        long hwndVal = com.sun.glass.ui.Window.getWindows().get(windowIndex).getNativeWindow();
-        progressbar.hwnd = Pointer.pointerToAddress(hwndVal);
+        long hwndVal = getHWNDValueOf(windowIndex);
+        progressbar.setHwnd(Pointer.pointerToAddress(hwndVal));
 
-        progressbar.es.execute(() -> {
-            progressbar.list.SetProgressState((Pointer) progressbar.hwnd, TaskbarProgressbarType.NOPROGRESS.getPair());
-        });
+        progressbar.getService().execute(() -> progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), TaskbarProgressbarType.NO_PROGRESS.getBridjPair()));
     }
 
+    @SuppressWarnings({"unchecked", "deprecation"})
     public static void showIndeterminateProgress(int windowIndex) {
-        TaskbarProgressbar progressbar = new TaskbarProgressbar();
+        TaskbarProgressbarImpl progressbar = new TaskbarProgressbarImpl();
 
-        long hwndVal = com.sun.glass.ui.Window.getWindows().get(windowIndex).getNativeWindow();
-        progressbar.hwnd = Pointer.pointerToAddress(hwndVal);
+        long hwndVal = getHWNDValueOf(windowIndex);
+        progressbar.setHwnd(Pointer.pointerToAddress(hwndVal));
 
-        progressbar.es.execute(() -> {
-            progressbar.list.SetProgressState((Pointer) progressbar.hwnd, TaskbarProgressbarType.INDETERMINATE.getPair());
+        progressbar.getService().execute(() -> progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), TaskbarProgressbarType.INDETERMINATE.getBridjPair()));
+    }
+
+    @SuppressWarnings({"unchecked", "deprecation"})
+    public static void showCustomProgress(int windowIndex, long done, long endValue, TaskbarProgressbarType type) {
+        TaskbarProgressbarImpl progressbar = new TaskbarProgressbarImpl();
+
+        long hwndVal = getHWNDValueOf(windowIndex);
+        progressbar.setHwnd(Pointer.pointerToAddress(hwndVal));
+
+        progressbar.getService().execute(() -> {
+            progressbar.getList().SetProgressValue((Pointer) progressbar.getHwnd(), done, endValue);
+            progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), type.getBridjPair());
         });
     }
 
-    public static void showOtherProgress(int windowIndex, long startValue, long endValue, TaskbarProgressbarType type) {
-        TaskbarProgressbar progressbar = new TaskbarProgressbar();
+    @SuppressWarnings({"unchecked", "deprecation"})
+    public static void showFullErrorProgress(int windowIndex) {
+        TaskbarProgressbarImpl progressbar = new TaskbarProgressbarImpl();
 
-        long hwndVal = com.sun.glass.ui.Window.getWindows().get(windowIndex).getNativeWindow();
-        progressbar.hwnd = Pointer.pointerToAddress(hwndVal);
+        long hwndVal = getHWNDValueOf(windowIndex);
+        progressbar.setHwnd(Pointer.pointerToAddress(hwndVal));
 
-        progressbar.es.execute(() -> {
-            progressbar.list.SetProgressValue((Pointer) progressbar.hwnd, startValue, endValue);
-            progressbar.list.SetProgressState((Pointer) progressbar.hwnd, type.getPair());
+        progressbar.getService().execute(() -> {
+            progressbar.getList().SetProgressValue((Pointer) progressbar.getHwnd(), 100, 100);
+            progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), TaskbarProgressbarType.ERROR.getBridjPair());
         });
     }
-    
-    public static void showErrorProgress(int windowIndex) {
-        TaskbarProgressbar progressbar = new TaskbarProgressbar();
 
-        long hwndVal = com.sun.glass.ui.Window.getWindows().get(windowIndex).getNativeWindow();
-        progressbar.hwnd = Pointer.pointerToAddress(hwndVal);
 
-        progressbar.es.execute(() -> {
-            progressbar.list.SetProgressValue((Pointer) progressbar.hwnd, 100, 100);
-            progressbar.list.SetProgressState((Pointer) progressbar.hwnd, TaskbarProgressbarType.ERROR.getPair());
-        });
+    /**
+     * Checks that the current system is supported or not.
+     *
+     * <p><br/>
+     * Actually checks that the OS is Windows and the Windows version
+     * is greater than Windows 7:
+     * <i>the taskbar progressbar functionality is working since Windows 7</i>
+     *
+     * @return <code>true</code> if the OS is supported for taskbar progressbar functionality
+     *         <code>false</code> otherwise.
+     */
+    public static boolean isSupported() {
+        return isWindows7OrLater();
     }
 
 }

@@ -35,7 +35,7 @@ There are 5 types of the taskbar progressbar:
 `TaskbarProgressbar.TaskbarProgressbarType.ERROR` - It is the error progressbar with the red color.
 `TaskbarProgressbar.TaskbarProgressbarType.PAUSED` - It is the paused progressbar with the yellow color.
 
-`TaskbarProgressbar.TaskbarProgressbarType.NOPROGRESS` - It is the empty progressbar
+`TaskbarProgressbar.TaskbarProgressbarType.NO_PROGRESS` - It is the empty progressbar
 `TaskbarProgressbar.TaskbarProgressbarType.INDETERMINATE` - It is the indeterminate progressbar. It doesn't show any fix progress.
 
 If you want to show an indeterminate progress:

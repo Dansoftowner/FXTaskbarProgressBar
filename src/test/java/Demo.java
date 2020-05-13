@@ -1,18 +1,12 @@
-
-package com.nativejavafx.taskbar;
-
-import com.sun.glass.ui.Window;
-import com.sun.javafx.stage.StageHelper;
+import com.nativejavafx.taskbar.TaskbarProgressbar;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 
@@ -24,9 +18,9 @@ public class Demo extends Application{
     private TaskbarProgressbar.TaskbarProgressbarType actualSelectedType;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         
-        TaskbarProgressbar taskProgressbar = new TaskbarProgressbar(primaryStage);
+        TaskbarProgressbar taskProgressbar = TaskbarProgressbar.createInstance(primaryStage);
         
         Button btn = new Button("Stop");
         btn.setOnAction((event) -> {
@@ -41,7 +35,7 @@ public class Demo extends Application{
         
         Stage stage = new Stage();
         
-        TaskbarProgressbar taskbarProgressbar2 = new TaskbarProgressbar(stage);
+        TaskbarProgressbar taskbarProgressbar2 = TaskbarProgressbar.createInstance(stage);
         
         Slider slider = new Slider(0, 100, 0);
         
@@ -72,7 +66,7 @@ public class Demo extends Application{
         VBox vBox = new VBox(slider, paused, normal, error);
         
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            taskbarProgressbar2.showOtherProgress((long)slider.getValue(), (long) slider.getMax(), actualSelectedType);
+            taskbarProgressbar2.showCustomProgress((long)slider.getValue(), (long) slider.getMax(), actualSelectedType);
         });
         
         stage.setScene(new Scene(vBox));
