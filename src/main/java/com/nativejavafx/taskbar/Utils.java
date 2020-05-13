@@ -2,9 +2,6 @@ package com.nativejavafx.taskbar;
 
 import com.sun.javafx.stage.StageHelper;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-
-import java.util.Objects;
 
 /**
  * Provides some utility methods
