@@ -1,10 +1,11 @@
 # ![JavaFXTaskbarProgressbar](images/Logo.png)
 ## This library allows you to add native taskbar-progressbar functionality to your JavaFX Stages.
-<b align="center">A clean and easy way to implement this native Windows-taskbar functionality in javaFX</b><br>
+<p align="center"><b>A clean and easy way to implement this native Windows-taskbar functionality in javaFX</b></p><br>
 <i>For the native access this project uses [bridj](https://github.com/nativelibs4java/BridJ) </i><br>
 
 ## Compatibility
-This library has support for java 8 and java 11 too.
+This library has support for java 8 and java 11 too.<br>
+<i>Note: if you use java 11 you have to pass this VM argument: `--add-exports javafx.graphics/com.sun.glass.ui=ALL-UNNAMED`</i>
 
 ## Source code
 This project has two important branches:
@@ -16,10 +17,10 @@ Since Windows 7 there is a taskbar-progressbar feature in Windows systems
 that basically means that you can see a progress on the program's icon.
 A good example for this when you copy something using the file explorer:<br>
 ![Taskbar progressbar in windows 7](images/areo-progressbar.jpg) <br>
-This is very useful because you don't have to open the window to know the progress!
+This is very useful because you don't have to open the window to see the progress!
 The problem is that javaFX doesn't provide this functionality by default... but now you 
-can easily implement this with the power of this library!  
-It allows you to do this in pure java!
+can easily implement it with this library!  
+It enables you to do this in pure java!
 
 ## How to include it to your project
 You can download the right jar file from the [releases](https://github.com/Dansoftowner/FXTaskbarProgressBar/releases). 
