@@ -37,6 +37,9 @@ public abstract class TaskbarProgressbar {
         }
     }
 
+    protected TaskbarProgressbar() {
+    }
+
     /**
      * Stops the progress on the taskbar
      */
