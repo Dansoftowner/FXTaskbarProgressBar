@@ -1,6 +1,7 @@
 # ![JavaFXTaskbarProgressbar](images/Logo.png)
-## This library allows you to add native taskbar-progressbar functionality to your JavaFX Stages.
-<p align="center"><b>A clean and easy way to implement this native Windows-taskbar functionality in javaFX</b></p>
+<p align="center"><b>A clean and easy way to implement this amazing native Windows taskbar-progressbar functionality in javaFX</b></p>
+
+###### This library allows you to add native taskbar-progressbar functionality to your JavaFX Stages.
 
 For the native access this project uses [bridj](https://github.com/nativelibs4java/BridJ) 
 
