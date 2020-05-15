@@ -12,26 +12,21 @@
  *    limitations under the License.
  */
 
-package com.nativejavafx.taskbar;
+package com.nativejavafx.taskbar.strategy;
+
+import com.sun.javafx.stage.StageHelper;
+import javafx.stage.Stage;
 
 /**
- * A NullTaskbarProgressbar is a {@link TaskbarProgressbar} which
- * actually doesn't do everything
+ * A {@link DefaultStageIndexer} is a {@link StageIndexer}
+ * that calculates the index of the stage through the
+ * {@link StageHelper#getStages()} API.
+ *
+ * <i>Works on java 8 only</i>
  */
-class NullTaskbarProgressbar extends TaskbarProgressbar {
+public class DefaultStageIndexer implements StageIndexer {
     @Override
-    public void stopProgress() {
-    }
-
-    @Override
-    public void showIndeterminateProgress() {
-    }
-
-    @Override
-    public void showCustomProgress(long done, long max, Type type) {
-    }
-
-    @Override
-    public void closeOperations() {
+    public int indexOf(Stage stage) {
+        return StageHelper.getStages().indexOf(stage);
     }
 }
