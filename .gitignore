@@ -3,6 +3,7 @@ build/classes
 build/generated
 build/tmp
 .idea
+.gradle
 .nb-gradle
 out
 lgcr.pptx

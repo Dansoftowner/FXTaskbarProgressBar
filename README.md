@@ -1,7 +1,9 @@
 # ![JavaFXTaskbarProgressbar](images/Logo.png)
-## This library allows you to add native taskbar-progressbar functionality to your JavaFX Stages.
-<p align="center"><b>A clean and easy way to implement this native Windows-taskbar functionality in javaFX</b></p><br>
-<i>For the native access this project uses [bridj](https://github.com/nativelibs4java/BridJ) </i><br>
+<p align="center"><b>A clean and easy way to implement this amazing native Windows taskbar-progressbar functionality in javaFX</b></p>
+
+###### This library allows you to add native taskbar-progressbar functionality to your JavaFX Stages.
+
+For the native access this project uses [bridj](https://github.com/nativelibs4java/BridJ) 
 
 ## Compatibility
 This library has support for java 8 and java 11 too.<br>
@@ -18,7 +20,7 @@ that basically means that you can see a progress on the program's icon.
 A good example for this when you copy something using the file explorer:<br>
 ![Taskbar progressbar in windows 7](images/areo-progressbar.jpg) <br>
 This is very useful because you don't have to open the window to see the progress!
-The problem is that javaFX doesn't provide this functionality by default... but now you 
+The problem is that javaFX doesn't provide this functionality by default... however you 
 can easily implement it with this library!  
 It enables you to do this in pure java!
 
@@ -33,7 +35,7 @@ to download the bridj binaries separately)</i>.
 
 ## How to use it Tutorial
 
-### Types of progressbar
+### 0. Types of progressbar
 Before we jump in, we have to know the 4 types of a taskbar-progressbar:<br>
 * `NORMAL` - a progressbar with normal green color
 * `PAUSED` - a progressbar with a yellow color

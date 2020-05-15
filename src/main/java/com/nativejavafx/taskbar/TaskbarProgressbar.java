@@ -1,10 +1,22 @@
+/*
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.nativejavafx.taskbar;
 
+import com.nativejavafx.taskbar.util.OS;
 import javafx.stage.Stage;
-import org.bridj.Pointer;
 import org.bridj.cpp.com.shell.ITaskbarList3;
-
-import static com.nativejavafx.taskbar.Utils.*;
 
 /**
  * A TaskbarProgressbar object can add native (Windows 7+) taskbar
@@ -24,7 +36,7 @@ public abstract class TaskbarProgressbar {
         INDETERMINATE(ITaskbarList3.TbpFlag.TBPF_INDETERMINATE),
         NO_PROGRESS(ITaskbarList3.TbpFlag.TBPF_NOPROGRESS),
         NORMAL(ITaskbarList3.TbpFlag.TBPF_NORMAL),
-        PAUSED (ITaskbarList3.TbpFlag.TBPF_PAUSED);
+        PAUSED(ITaskbarList3.TbpFlag.TBPF_PAUSED);
 
         private final ITaskbarList3.TbpFlag bridjPair;
 
@@ -36,6 +48,13 @@ public abstract class TaskbarProgressbar {
             return this.bridjPair;
         }
     }
+
+    /**
+     * A {@link TaskbarProgressbar} object-cache that used
+     * for static operations.
+     */
+    private static TaskbarProgressbar cache;
+
 
     protected TaskbarProgressbar() {
     }
@@ -54,7 +73,7 @@ public abstract class TaskbarProgressbar {
      * Shows a custom progress on the taskbar
      *
      * @param done the done value of the max value
-     * @param max the max "100%" value
+     * @param max  the max "100%" value
      * @param type the type of the progress; must't be null
      * @throws NullPointerException if the type is null
      */
@@ -67,7 +86,23 @@ public abstract class TaskbarProgressbar {
         this.showCustomProgress(100, 100, Type.ERROR);
     }
 
+    /**
+     * Shows a 100% paused progress
+     */
+    public void showFullPausedProgress() {
+        this.showCustomProgress(100, 100, Type.PAUSED);
+    }
 
+    /**
+     * Shows a 100% normal progress
+     */
+    public void showFullNormalProgress() {
+        this.showCustomProgress(100, 100, Type.NORMAL);
+    }
+
+    /**
+     * Closes all background-thread tasks
+     */
     public abstract void closeOperations();
 
     /**
@@ -82,107 +117,88 @@ public abstract class TaskbarProgressbar {
      *
      * @param stage the stage to get the progressbar on the taskbar to
      * @return the taskbar-progressbar object
+     * @deprecated use {@link TaskbarProgressbarFactory#getTaskbarProgressbar(Stage)} instead.
      */
+    @Deprecated
     public static TaskbarProgressbar createInstance(Stage stage) {
-        if (isSupported()) return new TaskbarProgressbarImpl(stage);
-        else return new NullTaskbarProgressbar();
+        return TaskbarProgressbarFactory.getTaskbarProgressbar(stage);
+    }
+
+    private synchronized static void createCache() {
+        if (cache == null) cache = TaskbarProgressbarFactory.getTaskbarProgressbar(null, false);
     }
 
     /**
      * Stops the taskbar-progress on the given stage.
      *
-     * <p><br>
-     * Actually calls the {@link TaskbarProgressbar#stopProgress(int)}
-     * method with the index of the stage.
-     *
      * @param stage the javaFX stage to stop the progress on; mustn't be null
      * @throws NullPointerException if the stage is null
-     * @see TaskbarProgressbar#stopProgress(int) 
      */
     public static void stopProgress(Stage stage) {
-        stopProgress(getIndexOfStage(stage));
+        createCache();
+
+        TaskbarProgressbarImpl impl = (TaskbarProgressbarImpl) cache;
+        impl.setStage(stage);
+        cache.stopProgress();
     }
 
     /**
      * Shows an indeterminate taskbar-progress on the given stage.
      *
-     * <p><br>
-     * Actually calls the {@link TaskbarProgressbar#showIndeterminateProgress(int)}
-     * method with the index of the stage.
-     *
      * @param stage the javaFX stage to show the progress on; mustn't be null
      * @throws NullPointerException if the stage is null
-     * @see TaskbarProgressbar#showIndeterminateProgress(int)
      */
     public static void showIndeterminateProgress(Stage stage) {
-        showIndeterminateProgress(getIndexOfStage(stage));
+        createCache();
+
+        TaskbarProgressbarImpl impl = (TaskbarProgressbarImpl) cache;
+        impl.setStage(stage);
+        cache.showIndeterminateProgress();
     }
 
     /**
      * Shows a custom progress on the taskbar.
      *
-     * <p><br>
-     * Actually calls the {@link TaskbarProgressbar#showCustomProgress(int, long, long, Type)}
-     * method with the index of the stage.
-     *
      * @param stage the javaFX stage to show the progress on; mustn't be null
-     * @param done specifies the actual "done" value of the max value
-     * @param max specifies the max, 100% value of the loading
-     * @param type the type of the progress; mustn't be null
+     * @param done  specifies the actual "done" value of the max value
+     * @param max   specifies the max, 100% value of the loading
+     * @param type  the type of the progress; mustn't be null
      * @throws NullPointerException if the stage or the type is null
-     * @see TaskbarProgressbar#showCustomProgress(int, long, long, Type)
      */
     public static void showCustomProgress(Stage stage, long done, long max, Type type) {
-        showCustomProgress(getIndexOfStage(stage), done, max, type);
+        createCache();
+
+        TaskbarProgressbarImpl impl = (TaskbarProgressbarImpl) cache;
+        impl.setStage(stage);
+        impl.showCustomProgress(done, max, type);
     }
 
-
-    @SuppressWarnings({"deprecation", "unchecked"})
-    public static void stopProgress(int windowIndex) {
-        TaskbarProgressbarImpl progressbar = new TaskbarProgressbarImpl();
-
-        long hwndVal = getHWNDValueOf(windowIndex);
-        progressbar.setHwnd(Pointer.pointerToAddress(hwndVal));
-
-        progressbar.getService().execute(() -> progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), Type.NO_PROGRESS.getBridjPair()));
+    /**
+     * Shows a full error progress on the taskbar.
+     *
+     * @param stage the javaFX stage to show the progress on; mustn't be null
+     */
+    public static void showFullErrorProgress(Stage stage) {
+        showCustomProgress(stage, 100, 100, Type.ERROR);
     }
 
-    @SuppressWarnings({"unchecked", "deprecation"})
-    public static void showIndeterminateProgress(int windowIndex) {
-        TaskbarProgressbarImpl progressbar = new TaskbarProgressbarImpl();
-
-        long hwndVal = getHWNDValueOf(windowIndex);
-        progressbar.setHwnd(Pointer.pointerToAddress(hwndVal));
-
-        progressbar.getService().execute(() -> progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), Type.INDETERMINATE.getBridjPair()));
+    /**
+     * Shows a full paused progress on the taskbar.
+     *
+     * @param stage the javaFX stage to show the progress on; mustn't be null
+     */
+    public static void showFullPausedProgress(Stage stage) {
+        showCustomProgress(stage, 100, 100, Type.PAUSED);
     }
 
-    @SuppressWarnings({"unchecked", "deprecation"})
-    public static void showCustomProgress(int windowIndex, long done, long endValue, Type type) {
-        TaskbarProgressbarImpl progressbar = new TaskbarProgressbarImpl();
-
-        long hwndVal = getHWNDValueOf(windowIndex);
-        progressbar.setHwnd(Pointer.pointerToAddress(hwndVal));
-
-        progressbar.getService().execute(() -> {
-            progressbar.getList().SetProgressValue((Pointer) progressbar.getHwnd(), done, endValue);
-            progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), type.getBridjPair());
-        });
+    /**
+     * Shows a full normal progress on the taskbar.
+     *
+     * @param stage the javaFX stage to show the progress on; mustn't be null
+     */
+    public static void showFullNormalProgress(Stage stage) {
+        showCustomProgress(stage, 100, 100, Type.NORMAL);
     }
-
-    @SuppressWarnings({"unchecked", "deprecation"})
-    public static void showFullErrorProgress(int windowIndex) {
-        TaskbarProgressbarImpl progressbar = new TaskbarProgressbarImpl();
-
-        long hwndVal = getHWNDValueOf(windowIndex);
-        progressbar.setHwnd(Pointer.pointerToAddress(hwndVal));
-
-        progressbar.getService().execute(() -> {
-            progressbar.getList().SetProgressValue((Pointer) progressbar.getHwnd(), 100, 100);
-            progressbar.getList().SetProgressState((Pointer) progressbar.getHwnd(), Type.ERROR.getBridjPair());
-        });
-    }
-
 
     /**
      * Checks that the current system is supported or not.
@@ -193,10 +209,14 @@ public abstract class TaskbarProgressbar {
      * <i>the taskbar progressbar functionality is working since Windows 7</i>
      *
      * @return <code>true</code> if the OS is supported for taskbar progressbar functionality
-     *         <code>false</code> otherwise.
+     * <code>false</code> otherwise.
      */
     public static boolean isSupported() {
-        return isWindows7OrLater();
+        return OS.isWindows7OrLater();
     }
 
+
+    public static boolean isNotSupported() {
+        return !isSupported();
+    }
 }

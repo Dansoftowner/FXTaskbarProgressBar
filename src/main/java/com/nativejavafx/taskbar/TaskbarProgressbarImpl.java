@@ -1,37 +1,59 @@
+/*
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.nativejavafx.taskbar;
 
+import com.nativejavafx.taskbar.strategy.HWNDStrategy;
 import javafx.stage.Stage;
 import org.bridj.Pointer;
 import org.bridj.cpp.com.COMRuntime;
 import org.bridj.cpp.com.shell.ITaskbarList3;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.nativejavafx.taskbar.Utils.getIndexOfStage;
-
 /**
- * A TaskbarProgressbarImpl is a TaskbarProgressbar that actually
- * do the native work through bridj.
+ * A TaskbarProgressbarImpl is a concrete TaskbarProgressbar
+ * implementation.
+ *
+ * <p>
+ * Communicates with the OS through bridj natively.
  */
 class TaskbarProgressbarImpl extends TaskbarProgressbar {
-    private final Stage stage;
 
-    private ExecutorService es;
+    private Stage stage;
+
+    private final HWNDStrategy hwndStrategy;
+
+    private ExecutorService executorService;
     private ITaskbarList3 list;
     private Pointer<?> hwnd;
 
-    TaskbarProgressbarImpl() {
-        stage = null;
+    TaskbarProgressbarImpl(HWNDStrategy hwndStrategy) {
+        this.hwndStrategy = Objects.requireNonNull(hwndStrategy, "The HWNDStrategy mustn't be null");
 
-        es = Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r);
-            t.setDaemon(true);
+        //creating the executor service that will execute the
+        //native operations on a background thread
+        executorService = Executors.newSingleThreadExecutor(r -> {
+            Thread backGroundThread = new Thread(r);
+            backGroundThread.setDaemon(true);
 
-            return t;
+            return backGroundThread;
         });
 
-        es.execute(() -> {
+        executorService.execute(() -> {
             try {
                 list = COMRuntime.newInstance(ITaskbarList3.class);
             } catch (ClassNotFoundException e) {
@@ -40,52 +62,42 @@ class TaskbarProgressbarImpl extends TaskbarProgressbar {
         });
     }
 
-    public TaskbarProgressbarImpl(Stage stage) {
+    TaskbarProgressbarImpl(Stage stage, HWNDStrategy hwndStrategy) {
+        this(hwndStrategy);
         this.stage = stage;
-
-        es = Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r);
-
-            t.setDaemon(true);
-
-            return t;
-        });
-
-        es.execute(() -> {
-            try {
-                list = COMRuntime.newInstance(ITaskbarList3.class);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
-
 
     @Override
     @SuppressWarnings({"unchecked", "deprecation"})
     public void stopProgress() {
-        long hwndVal = com.sun.glass.ui.Window.getWindows().get(getIndexOfStage(stage)).getNativeWindow();
+        if (this.stage == null) return;
+
+        long hwndVal = hwndStrategy.getHWND(this.stage);
         hwnd = Pointer.pointerToAddress(hwndVal);
 
-        es.execute(() -> list.SetProgressState((Pointer) hwnd, Type.NO_PROGRESS.getBridjPair()));
+        executorService.execute(() -> list.SetProgressState((Pointer) hwnd, Type.NO_PROGRESS.getBridjPair()));
     }
 
     @Override
     @SuppressWarnings({"unchecked", "deprecation"})
     public void showIndeterminateProgress() {
-        long hwndVal = com.sun.glass.ui.Window.getWindows().get(getIndexOfStage(stage)).getNativeWindow();
+        if (this.stage == null) return;
+
+        long hwndVal = hwndStrategy.getHWND(this.stage);
         hwnd = Pointer.pointerToAddress(hwndVal);
 
-        es.execute(() -> list.SetProgressState((Pointer) hwnd, Type.INDETERMINATE.getBridjPair()));
+        executorService.execute(() -> list.SetProgressState((Pointer) hwnd, Type.INDETERMINATE.getBridjPair()));
     }
 
     @Override
     @SuppressWarnings({"unchecked", "deprecation"})
     public void showCustomProgress(long startValue, long endValue, Type type) {
-        long hwndVal = com.sun.glass.ui.Window.getWindows().get(getIndexOfStage(stage)).getNativeWindow();
+        if (this.stage == null) return;
+
+        long hwndVal = hwndStrategy.getHWND(this.stage);
         hwnd = Pointer.pointerToAddress(hwndVal);
 
-        es.execute(() -> {
+        executorService.execute(() -> {
             list.SetProgressValue((Pointer) hwnd, startValue, endValue);
             list.SetProgressState((Pointer) hwnd, type.getBridjPair());
         });
@@ -93,24 +105,12 @@ class TaskbarProgressbarImpl extends TaskbarProgressbar {
 
     @Override
     public void closeOperations() {
-        es.submit(() -> list.Release());
-        es.shutdown();
-        es = null;
+        executorService.submit(() -> list.Release());
+        executorService.shutdown();
+        executorService = null;
     }
 
-    ExecutorService getService() {
-        return es;
-    }
-
-    ITaskbarList3 getList() {
-        return list;
-    }
-
-    void setHwnd(Pointer<?> hwnd) {
-        this.hwnd = hwnd;
-    }
-
-    Pointer<?> getHwnd() {
-        return hwnd;
+    synchronized void setStage(Stage stage) {
+        this.stage = stage;
     }
 }

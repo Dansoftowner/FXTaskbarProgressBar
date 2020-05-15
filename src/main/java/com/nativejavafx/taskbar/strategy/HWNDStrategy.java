@@ -12,26 +12,23 @@
  *    limitations under the License.
  */
 
-package com.nativejavafx.taskbar;
+package com.nativejavafx.taskbar.strategy;
+
+import javafx.stage.Stage;
 
 /**
- * A NullTaskbarProgressbar is a {@link TaskbarProgressbar} which
- * actually doesn't do everything
+ * A HWNDStrategy used for getting the HWND
+ * ("lowest-level" native window handle on Windows systems)
  */
-class NullTaskbarProgressbar extends TaskbarProgressbar {
-    @Override
-    public void stopProgress() {
-    }
+public interface HWNDStrategy {
 
-    @Override
-    public void showIndeterminateProgress() {
-    }
-
-    @Override
-    public void showCustomProgress(long done, long max, Type type) {
-    }
-
-    @Override
-    public void closeOperations() {
-    }
+    /**
+     * Returns the native handle (on Windows: HWND)
+     * of the javaFX Stage
+     *
+     * @param stage the stage to get the HWND of; mustn't be null
+     * @return the HWND value
+     * @throws NullPointerException if the stage is null
+     */
+    long getHWND(Stage stage);
 }
