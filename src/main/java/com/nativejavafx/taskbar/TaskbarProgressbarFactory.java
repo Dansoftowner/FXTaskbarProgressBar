@@ -18,6 +18,7 @@ import com.nativejavafx.taskbar.strategy.GlassApiHWNDStrategy;
 import com.nativejavafx.taskbar.strategy.DefaultStageIndexer;
 import javafx.stage.Stage;
 
+import static com.nativejavafx.taskbar.TaskbarProgressbar.isNotSupported;
 import static com.nativejavafx.taskbar.TaskbarProgressbar.isSupported;
 
 /**
@@ -26,20 +27,27 @@ import static com.nativejavafx.taskbar.TaskbarProgressbar.isSupported;
  */
 public class TaskbarProgressbarFactory {
 
-    static TaskbarProgressbar getTaskbarProgressbar(Stage stage, boolean checkSupported) {
-        if (checkSupported) {
-
-            if (!isSupported())
-              return new NullTaskbarProgressbar();
-
-        }
-
-        return new TaskbarProgressbarImpl(stage,
-                new GlassApiHWNDStrategy(new DefaultStageIndexer()));
+    static TaskbarProgressbar getTaskbarProgressbarImpl(Stage stage) {
+        return new TaskbarProgressbarImpl(stage, new GlassApiHWNDStrategy(new DefaultStageIndexer()));
     }
 
+    /**
+     * Creates a {@link TaskbarProgressbar} object.
+     *
+     * <p>
+     * At first it checks that the taskbar progressbar functionality
+     * is supported on the current system: if it is then it will
+     * return a fully featured TaskbarProgressbar; otherwise
+     * it will return a taskbar-progressbar object that actually
+     * doesn't do anything.
+     *
+     * @param stage the stage to get the progressbar on the taskbar to
+     * @return the taskbar-progressbar object
+     */
     public static TaskbarProgressbar getTaskbarProgressbar(Stage stage) {
-        return getTaskbarProgressbar(stage, true);
+        if (TaskbarProgressbar.isNotSupported())
+            return new NullTaskbarProgressbar();
+        return getTaskbarProgressbarImpl(stage);
     }
 
 }

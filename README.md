@@ -93,9 +93,10 @@ To stop the progress:
 TaskbarProgressbar.stopProgress(primaryStage);
 ```
 #### 2. Through instantiation *(the recommended way)*
-Firstly (after you imported the necessary class) create a `TaskbarProgressbar` instance:
+Firstly (after you imported the necessary class) create a `TaskbarProgressbar` instance with the help of
+`TaskbarProgressbarFactory`:
 ```java
-TaskbarProgressbar progressbar = TaskbarProgressbar.createInstance(primaryStage);
+TaskbarProgressbar progressbar = TaskbarProgressbarFactory.getTaskbarProgressbar(primaryStage);
 ```
 Before any operation you have to show the Stage:
 ```java
@@ -123,12 +124,21 @@ progressbar.stopProgress();
 #### Bonus features
 
 A simple method for showing a fully loaded error progressbar
-```
+```java
 progressbar.showFullErrorProgress();
 //equivalent to progressbar.showCustomProgress(100, 100, TaskbarProgressbar.Type.ERROR) 
 ```
 <b>Result:</b><br>
 ![Full errror taskbar progress](images/full-error-progress.jpg)
+
+<i>Also:</i>
+```java
+progressbar.showFullNormalProgress();
+```
+
+```java
+progressbar.showFullPausedProgress();
+```
 
 ## More screenshots
 Some more screenshots about what can you do with this library

@@ -106,17 +106,6 @@ public abstract class TaskbarProgressbar {
     public abstract void closeOperations();
 
     /**
-     * Creates a {@link TaskbarProgressbar} object.
-     *
-     * <p>
-     * At first it checks that the taskbar progressbar functionality
-     * is supported on the current system: if it is then it will
-     * return a fully featured TaskbarProgressbar; otherwise
-     * it will return a taskbar-progressbar object that actually
-     * doesn't do anything.
-     *
-     * @param stage the stage to get the progressbar on the taskbar to
-     * @return the taskbar-progressbar object
      * @deprecated use {@link TaskbarProgressbarFactory#getTaskbarProgressbar(Stage)} instead.
      */
     @Deprecated
@@ -125,7 +114,7 @@ public abstract class TaskbarProgressbar {
     }
 
     private synchronized static void createCache() {
-        if (cache == null) cache = TaskbarProgressbarFactory.getTaskbarProgressbar(null, false);
+        if (cache == null) cache = TaskbarProgressbarFactory.getTaskbarProgressbarImpl(null);
     }
 
     /**
