@@ -1,6 +1,15 @@
-apply plugin: 'java'
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+}
 
 sourceCompatibility = '11'
+
+javafx {
+    version = "11"
+    modules = ['javafx.base', 'javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.media', 'javafx.web']
+}
 
 compileJava {
     options.compilerArgs += ['--add-exports', 'javafx.graphics/com.sun.glass.ui=ALL-UNNAMED']
