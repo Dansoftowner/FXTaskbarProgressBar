@@ -25,6 +25,8 @@ can easily implement it with this library!
 It enables you to do this in pure java!
 
 ## How to include it to your project
+
+### 1. Manually
 You can download the right jar file from the [releases](https://github.com/Dansoftowner/FXTaskbarProgressBar/releases). 
 <br>
 Every release has two jar files: one is a fat jar (it's name ends with '*-full-x.x.jar') that contains the bridj binaries 
@@ -32,6 +34,45 @@ as well <i>(so if you use this you don't have to include bridj separately for yo
 and another jar that doesn't contain the external bridj binaries <i>(in this case you have
 to download the bridj binaries separately)</i>.
 <br><b>The 'v11.x' versions are for java11 users and the 'v8.x' versions are for java 8 users.</b>
+
+### 2. Using with Maven, Gradle etc...
+<b>Maven example:</b><br>
+
+Add JitPack.io to your repositories :
+```xml
+<repositories>
+   <repository>
+     <id>jitpack.io</id>
+     <url>https://jitpack.io</url>
+   </repository>
+</repositories>
+```
+Add the dependency:
+```xml
+<dependency>
+	<groupId>com.github.Dansoftowner</groupId>
+	<artifactId>FXTaskbarProgressBar</artifactId>
+	<version>v11.2.4</version>
+</dependency>
+```
+
+<b>Gradle example</b>
+
+Add the repository:
+```groovy
+repositories {
+    //...
+    maven { url 'https://jitpack.io' }
+}
+```
+
+Add the dependency:
+```groovy
+dependencies {
+    //...
+    implementation 'com.github.Dansoftowner:FXTaskbarProgressBar:v11.2.4'
+}
+```
 
 ## How to use it Tutorial
 
