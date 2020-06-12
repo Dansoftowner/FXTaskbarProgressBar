@@ -18,6 +18,7 @@ import com.nativejavafx.taskbar.strategy.HWNDStrategy;
 import javafx.stage.Stage;
 import org.bridj.Pointer;
 import org.bridj.cpp.com.COMRuntime;
+import org.bridj.cpp.com.shell.ITaskbarList2;
 import org.bridj.cpp.com.shell.ITaskbarList3;
 
 import java.util.Objects;

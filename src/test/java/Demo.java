@@ -9,6 +9,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.bridj.cpp.com.shell.ITaskbarList3;
 
 public class Demo extends Application{
     public static void main(String[] args) {
