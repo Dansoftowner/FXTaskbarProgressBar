@@ -7,7 +7,7 @@ For the native access this project uses [bridj](https://github.com/nativelibs4ja
 
 ## Compatibility
 This library has support for java 8 and java 11 too.<br>
-<i>Note: if you use java 11 you have to pass this VM argument: `--add-exports javafx.graphics/com.sun.glass.ui=ALL-UNNAMED`</i>
+<i>Note: if you use java 11 you have to pass this VM argument: `--add-exports javafx.graphics/com.sun.glass.ui=nativejavafx.taskbar`</i>
 
 ## Source code
 This project has two important branches:
