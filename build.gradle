@@ -11,7 +11,7 @@ javafx {
 }
 
 compileJava {
-    options.compilerArgs += ['--add-exports', 'javafx.graphics/com.sun.glass.ui=ALL-UNNAMED']
+    options.compilerArgs += ['--add-exports', 'javafx.graphics/com.sun.glass.ui=nativejavafx.taskbar']
 }
 
 jar {
