@@ -105,14 +105,6 @@ public abstract class TaskbarProgressbar {
      */
     public abstract void closeOperations();
 
-    /**
-     * @deprecated use {@link TaskbarProgressbarFactory#getTaskbarProgressbar(Stage)} instead.
-     */
-    @Deprecated
-    public static TaskbarProgressbar createInstance(Stage stage) {
-        return TaskbarProgressbarFactory.getTaskbarProgressbar(stage);
-    }
-
     private synchronized static void createCache() {
         if (cache == null) cache = TaskbarProgressbarFactory.getTaskbarProgressbarImpl(null);
     }
