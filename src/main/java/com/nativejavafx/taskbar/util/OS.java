@@ -6,6 +6,13 @@ package com.nativejavafx.taskbar.util;
  * application runs on.
  */
 public class OS {
+
+    private static final String OS = System.getProperty("os.name");
+    private static final String VERSION = System.getProperty("os.version");
+
+    private static final boolean WINDOWS = OS.startsWith("Windows");
+    private static final boolean WINDOWS_7_OR_LATER = WINDOWS && versionGreaterThanOrEqualTo(6.1F);
+
     private OS() {
     }
 
@@ -16,19 +23,14 @@ public class OS {
      *         <code>false</code> otherwise
      */
     public static boolean isWindows7OrLater() {
-        double version = Double.parseDouble(System.getProperty("os.version"));
-        double win7Version = 6.1; //Windows 7 has this version number
-
-        return isWindows() && version >= win7Version;
+        return WINDOWS_7_OR_LATER;
     }
 
-    /**
-     * Checks that the OS is windows or not.
-     *
-     * @return <code>true</code> if the OS is windows;
-     *         <code>false</code> otherwise
-     */
-    public static boolean isWindows() {
-        return System.getProperty("os.name").startsWith("Windows");
+    public static boolean versionGreaterThanOrEqualTo(float value) {
+        try {
+            return Float.parseFloat(VERSION) >= value;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
