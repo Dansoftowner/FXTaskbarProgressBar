@@ -17,6 +17,9 @@ package com.nativejavafx.taskbar;
 import com.nativejavafx.taskbar.util.OS;
 import javafx.stage.Stage;
 import org.bridj.cpp.com.shell.ITaskbarList3;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 /**
  * A TaskbarProgressbar object can add native (Windows 7+) taskbar
@@ -74,10 +77,18 @@ public abstract class TaskbarProgressbar {
      *
      * @param done the done value of the max value
      * @param max  the max "100%" value
-     * @param type the type of the progress; must't be null
+     * @param type the type of the progress; mustn't be null
      * @throws NullPointerException if the type is null
      */
-    public abstract void showCustomProgress(long done, long max, Type type);
+    public abstract void showCustomProgress(long done, long max, @NotNull Type type);
+
+    /**
+     * Sets the type of the progress
+     *
+     * @param type the type; mustn't be null
+     * @throws NullPointerException if type is null
+     */
+    public abstract void setProgressType(@NotNull Type type);
 
     /**
      * Shows a 100% error progress
@@ -109,18 +120,22 @@ public abstract class TaskbarProgressbar {
         if (cache == null) cache = TaskbarProgressbarFactory.getTaskbarProgressbarImpl(null);
     }
 
+    private synchronized static TaskbarProgressbarImpl getTaskbarProgressbarImpl(@NotNull Stage stage) {
+        Objects.requireNonNull(stage);
+        createCache();
+        TaskbarProgressbarImpl impl = (TaskbarProgressbarImpl) cache;
+        impl.setStage(stage);
+        return impl;
+    }
+
     /**
      * Stops the taskbar-progress on the given stage.
      *
      * @param stage the javaFX stage to stop the progress on; mustn't be null
      * @throws NullPointerException if the stage is null
      */
-    public static void stopProgress(Stage stage) {
-        createCache();
-
-        TaskbarProgressbarImpl impl = (TaskbarProgressbarImpl) cache;
-        impl.setStage(stage);
-        cache.stopProgress();
+    public static void stopProgress(@NotNull Stage stage) {
+        getTaskbarProgressbarImpl(stage).stopProgress();
     }
 
     /**
@@ -129,12 +144,8 @@ public abstract class TaskbarProgressbar {
      * @param stage the javaFX stage to show the progress on; mustn't be null
      * @throws NullPointerException if the stage is null
      */
-    public static void showIndeterminateProgress(Stage stage) {
-        createCache();
-
-        TaskbarProgressbarImpl impl = (TaskbarProgressbarImpl) cache;
-        impl.setStage(stage);
-        cache.showIndeterminateProgress();
+    public static void showIndeterminateProgress(@NotNull Stage stage) {
+        getTaskbarProgressbarImpl(stage).showIndeterminateProgress();
     }
 
     /**
@@ -146,12 +157,18 @@ public abstract class TaskbarProgressbar {
      * @param type  the type of the progress; mustn't be null
      * @throws NullPointerException if the stage or the type is null
      */
-    public static void showCustomProgress(Stage stage, long done, long max, Type type) {
-        createCache();
+    public static void showCustomProgress(@NotNull Stage stage, long done, long max, @NotNull Type type) {
+        getTaskbarProgressbarImpl(stage).showCustomProgress(done, max, type);
+    }
 
-        TaskbarProgressbarImpl impl = (TaskbarProgressbarImpl) cache;
-        impl.setStage(stage);
-        impl.showCustomProgress(done, max, type);
+    /**
+     * Sets the type of the progress on the given stage.
+     *
+     * @param type the type; mustn't be null
+     * @throws NullPointerException if type is null
+     */
+    public static void setProgressType(@NotNull Stage stage, @NotNull Type type) {
+        getTaskbarProgressbarImpl(stage).setProgressType(type);
     }
 
     /**
@@ -159,7 +176,7 @@ public abstract class TaskbarProgressbar {
      *
      * @param stage the javaFX stage to show the progress on; mustn't be null
      */
-    public static void showFullErrorProgress(Stage stage) {
+    public static void showFullErrorProgress(@NotNull Stage stage) {
         showCustomProgress(stage, 100, 100, Type.ERROR);
     }
 
@@ -168,7 +185,7 @@ public abstract class TaskbarProgressbar {
      *
      * @param stage the javaFX stage to show the progress on; mustn't be null
      */
-    public static void showFullPausedProgress(Stage stage) {
+    public static void showFullPausedProgress(@NotNull Stage stage) {
         showCustomProgress(stage, 100, 100, Type.PAUSED);
     }
 
@@ -177,7 +194,7 @@ public abstract class TaskbarProgressbar {
      *
      * @param stage the javaFX stage to show the progress on; mustn't be null
      */
-    public static void showFullNormalProgress(Stage stage) {
+    public static void showFullNormalProgress(@NotNull Stage stage) {
         showCustomProgress(stage, 100, 100, Type.NORMAL);
     }
 
