@@ -14,6 +14,8 @@
 
 package com.nativejavafx.taskbar;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * A NullTaskbarProgressbar is a {@link TaskbarProgressbar} which
  * actually doesn't do everything
@@ -28,7 +30,11 @@ class NullTaskbarProgressbar extends TaskbarProgressbar {
     }
 
     @Override
-    public void showCustomProgress(long done, long max, Type type) {
+    public void showCustomProgress(long done, long max, @NotNull Type type) {
+    }
+
+    @Override
+    public void setProgressType(@NotNull Type type) {
     }
 
     @Override

@@ -20,98 +20,106 @@ import org.bridj.Pointer;
 import org.bridj.cpp.com.COMRuntime;
 import org.bridj.cpp.com.shell.ITaskbarList2;
 import org.bridj.cpp.com.shell.ITaskbarList3;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A TaskbarProgressbarImpl is a concrete TaskbarProgressbar
  * implementation.
  *
- * <p>
- * Communicates with the OS through bridj natively.
+ * @author Daniel Gyorffy
  */
 class TaskbarProgressbarImpl extends TaskbarProgressbar {
 
-    private Stage stage;
+    private static final Logger logger = LoggerFactory.getLogger(TaskbarProgressbarImpl.class);
 
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(DaemonThread::new);
+    private final AtomicReference<ITaskbarList3> iTaskbarList3 = new AtomicReference<>();
+    private final AtomicReference<Stage> stage = new AtomicReference<>();
     private final HWNDStrategy hwndStrategy;
-
-    private ExecutorService executorService;
-    private ITaskbarList3 list;
-    private Pointer<?> hwnd;
 
     TaskbarProgressbarImpl(HWNDStrategy hwndStrategy) {
         this.hwndStrategy = Objects.requireNonNull(hwndStrategy, "The HWNDStrategy mustn't be null");
-
-        //creating the executor service that will execute the
-        //native operations on a background thread
-        executorService = Executors.newSingleThreadExecutor(r -> {
-            Thread backGroundThread = new Thread(r);
-            backGroundThread.setDaemon(true);
-
-            return backGroundThread;
-        });
-
-        executorService.execute(() -> {
-            try {
-                list = COMRuntime.newInstance(ITaskbarList3.class);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        this.instantiateITaskbarList();
     }
 
     TaskbarProgressbarImpl(Stage stage, HWNDStrategy hwndStrategy) {
         this(hwndStrategy);
-        this.stage = stage;
+        this.setStage(stage);
     }
 
-    @Override
-    @SuppressWarnings({"unchecked", "deprecation"})
-    public void stopProgress() {
-        if (this.stage == null) return;
-
-        long hwndVal = hwndStrategy.getHWND(this.stage);
-        hwnd = Pointer.pointerToAddress(hwndVal);
-
-        executorService.execute(() -> list.SetProgressState((Pointer) hwnd, Type.NO_PROGRESS.getBridjPair()));
+    synchronized void setStage(@NotNull Stage stage) {
+        this.stage.set(stage);
     }
 
-    @Override
-    @SuppressWarnings({"unchecked", "deprecation"})
-    public void showIndeterminateProgress() {
-        if (this.stage == null) return;
-
-        long hwndVal = hwndStrategy.getHWND(this.stage);
-        hwnd = Pointer.pointerToAddress(hwndVal);
-
-        executorService.execute(() -> list.SetProgressState((Pointer) hwnd, Type.INDETERMINATE.getBridjPair()));
-    }
-
-    @Override
-    @SuppressWarnings({"unchecked", "deprecation"})
-    public void showCustomProgress(long startValue, long endValue, Type type) {
-        if (this.stage == null) return;
-
-        long hwndVal = hwndStrategy.getHWND(this.stage);
-        hwnd = Pointer.pointerToAddress(hwndVal);
-
-        executorService.execute(() -> {
-            list.SetProgressValue((Pointer) hwnd, startValue, endValue);
-            list.SetProgressState((Pointer) hwnd, type.getBridjPair());
+    private void instantiateITaskbarList() {
+        executor.execute(() -> {
+            try {
+                iTaskbarList3.set(COMRuntime.newInstance(ITaskbarList3.class));
+            } catch (ClassNotFoundException e) {
+                logger.error("Couldn't instantiate ");
+            }
         });
+    }
+
+    @SuppressWarnings({"unchecked", "deprecation"})
+    private Pointer<Integer> getPointer(Stage stage) {
+        long windowHandle = hwndStrategy.getHWND(stage);
+        return (Pointer<Integer>) Pointer.pointerToAddress(windowHandle);
+    }
+
+    private void setProgressState(Stage stage, Type type) {
+        if (stage != null) {
+            final Pointer<Integer> pointer = getPointer(stage);
+            executor.execute(() -> iTaskbarList3.get().SetProgressState(pointer, type.getBridjPair()));
+        }
+    }
+
+    @Override
+    public void stopProgress() {
+        if (this.stage.get() != null) {
+            setProgressState(stage.get(), Type.NO_PROGRESS);
+        }
+    }
+
+    @Override
+    public void showIndeterminateProgress() {
+        if (this.stage.get() != null) {
+            setProgressState(stage.get(), Type.INDETERMINATE);
+        }
+    }
+
+    @Override
+    public void showCustomProgress(long startValue, long endValue, @NotNull Type type) {
+        if (this.stage.get() != null) {
+            final Pointer<Integer> pointer = getPointer(stage.get());
+            executor.execute(() -> {
+                iTaskbarList3.get().SetProgressValue(pointer, startValue, endValue);
+                iTaskbarList3.get().SetProgressState(pointer, type.getBridjPair());
+            });
+        }
+    }
+
+    @Override
+    public void setProgressType(@NotNull Type type) {
+        setProgressState(stage.get(), type);
     }
 
     @Override
     public void closeOperations() {
-        executorService.submit(() -> list.Release());
-        executorService.shutdown();
-        executorService = null;
+        executor.submit(() -> iTaskbarList3.get().Release());
     }
 
-    synchronized void setStage(Stage stage) {
-        this.stage = stage;
+    private static final class DaemonThread extends Thread {
+        DaemonThread(Runnable runnable) {
+            super(runnable);
+            setDaemon(true);
+        }
     }
 }
