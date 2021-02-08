@@ -8,14 +8,13 @@ A good example for this when you copy something using the file explorer:<br>
 ![Taskbar progressbar in windows 7](images/areo-progressbar.jpg) <br>
 This is very useful because you don't have to open the window to see the progress!
 The problem is that javaFX doesn't provide this functionality by default... however you 
-can easily implement it with this library!  
-It enables you to do this in pure java!
+can easily implement it with this library!
 
 ## Compatibility
 This library has support for java 8 and java 11 too.<br>
 <b>The 'v11.x' versions are for java11 users and the 'v8.x' versions are for java 8 users.</b>
 
-##### Using with java 11
+### Using with java 11
 If you use java 11 you have to pass this VM argument: `--add-exports javafx.graphics/com.sun.glass.ui=nativejavafx.taskbar`.
 Also, you have to mention the `nativejavafx.taskbar` module in your `module-info.java` file:
 ```java
@@ -184,6 +183,9 @@ Code: `progressbar.showCustomProgress(40, 100, TaskbarProgressbar.Type.ERROR);`<
 ## Full demo
 A full demo-example class is available [here](src/test/java/Demo.java). 
 
+## Projects using `FXTaskbarProgressBar`
+If this library is used by your project, let me know in the `Discussions` and I will mention that in this section.
+
 ## Source code
 This project has two important branches:
 * "master" - for java 8 builds
@@ -195,5 +197,4 @@ This project has two important branches:
  * [Jetbrains Annotations](https://github.com/JetBrains/java-annotations) - Annotations for JVM-based languages
 
 ## Support
-If you like this library please give me a star! It's very important for me 
-because it keeps me motivated to work on this library. Thank you!
+If you like this library give it a star!
