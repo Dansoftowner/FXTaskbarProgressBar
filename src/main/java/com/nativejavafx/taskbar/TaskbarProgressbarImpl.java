@@ -62,8 +62,8 @@ class TaskbarProgressbarImpl extends TaskbarProgressbar {
         executor.execute(() -> {
             try {
                 iTaskbarList3.set(COMRuntime.newInstance(ITaskbarList3.class));
-            } catch (ClassNotFoundException e) {
-                logger.error("Couldn't instantiate ");
+            } catch (ClassNotFoundException | RuntimeException e) {
+                logger.error("Couldn't instantiate ITaskbarList3", e);
             }
         });
     }

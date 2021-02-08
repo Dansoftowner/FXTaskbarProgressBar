@@ -1,14 +1,20 @@
 # ![JavaFXTaskbarProgressbar](images/Logo.png)
 <p align="center"><b>A clean and easy way to implement this amazing native Windows taskbar-progressbar functionality in javaFX</b></p>
 
-###### This library allows you to add native taskbar-progressbar functionality to your JavaFX Stages.
-
-For the native access this project uses [bridj](https://github.com/nativelibs4java/BridJ) 
+## Background
+Since Windows 7 there is a taskbar-progressbar feature in Windows systems
+that basically means that you can see progress on the program's taskbar icon.
+A good example for this when you copy something using the file explorer:<br>
+![Taskbar progressbar in windows 7](images/areo-progressbar.jpg) <br>
+This is very useful because you don't have to open the window to see the progress!
+The problem is that javaFX doesn't provide this functionality by default... however you 
+can easily implement it with this library!
 
 ## Compatibility
 This library has support for java 8 and java 11 too.<br>
+<b>The 'v11.x' versions are for java11 users and the 'v8.x' versions are for java 8 users.</b>
 
-##### Using with java 11
+### Using with java 11
 If you use java 11 you have to pass this VM argument: `--add-exports javafx.graphics/com.sun.glass.ui=nativejavafx.taskbar`.
 Also, you have to mention the `nativejavafx.taskbar` module in your `module-info.java` file:
 ```java
@@ -16,36 +22,11 @@ module YourModule {
     ...
     requires nativejavafx.taskbar;
 }
-``` 
-
-## Source code
-This project has two important branches:
-* "master" - for java 8 builds
-* "11" - for java 11 builds
-
-## Background
-Since Windows 7 there is a taskbar-progressbar feature in Windows systems
-that basically means that you can see a progress on the program's icon.
-A good example for this when you copy something using the file explorer:<br>
-![Taskbar progressbar in windows 7](images/areo-progressbar.jpg) <br>
-This is very useful because you don't have to open the window to see the progress!
-The problem is that javaFX doesn't provide this functionality by default... however you 
-can easily implement it with this library!  
-It enables you to do this in pure java!
+```
 
 ## How to include it to your project
 
-### 1. Manually
-You can download the right jar file from the [releases](https://github.com/Dansoftowner/FXTaskbarProgressBar/releases). 
-<br>
-Every release has two jar files: one is a fat jar (it's name ends with '*-full-x.x.jar') that contains the bridj binaries 
-as well <i>(so if you use this you don't have to include bridj separately for your project)</i>;
-and another jar that doesn't contain the external bridj binaries <i>(in this case you have
-to download the bridj binaries separately)</i>.
-<br><b>The 'v11.x' versions are for java11 users and the 'v8.x' versions are for java 8 users.</b>
-
-### 2. Using with Maven, Gradle etc...
-<b>Maven example:</b><br>
+### Maven example:
 
 Add JitPack.io to your repositories :
 ```xml
@@ -61,11 +42,11 @@ Add the dependency:
 <dependency>
 	<groupId>com.github.Dansoftowner</groupId>
 	<artifactId>FXTaskbarProgressBar</artifactId>
-	<version>v11.2.7</version>
+	<version>v11.3</version>
 </dependency>
 ```
 
-<b>Gradle example</b>
+### Gradle example
 
 Add the repository:
 ```groovy
@@ -79,7 +60,7 @@ Add the dependency:
 ```groovy
 dependencies {
     //...
-    implementation 'com.github.Dansoftowner:FXTaskbarProgressBar:v11.2.7'
+    implementation 'com.github.Dansoftowner:FXTaskbarProgressBar:v11.3'
 }
 ```
 
@@ -93,7 +74,7 @@ Before we jump in, we have to know the 4 types of a taskbar-progressbar:<br>
 * `INDETERMINATE` - a progressbar that doesn't show any fix progress
 * `NO_PROGRESS` - a progressbar that doesn't show anything 
 <br><br>
-All these types are represented by an enum called `com.nativejavafx.taskbar.TaskbarProgressbar.Type`.
+All these types are represented by the enum called `com.nativejavafx.taskbar.TaskbarProgressbar.Type`.
 
 Now let's see how can we actually use this through code.<br>
 There are multiple ways to create taskbar progressbars with this library:
@@ -196,12 +177,24 @@ Some more screenshots about what can you do with this library
 Code: `progressbar.showCustomProgress(70, 100, TaskbarProgressbar.Type.PAUSED);`<br>
 ![Paused progress](images/paused-progress.jpg)
 * An error progress example:<br>
-Code: `progressbar.showCustomProgress(40, 100, TaskbarProgressbar.Type.ERROR);`<br>
+Code: `progressbar.showCustomProgress(40, 100, TaskbarProgressbar.Type.ERROR);`<br>b
 ![Paused progress](images/error-progress.jpg)
 
 ## Full demo
 A full demo-example class is available [here](src/test/java/Demo.java). 
 
+## Projects using `FXTaskbarProgressBar`
+If this library is used by your project, let me know in the `Discussions` and I will mention that in this section.
+
+## Source code
+This project has two important branches:
+* "master" - for java 8 builds
+* "11" - for java 11 builds
+
+## Used libraries
+ * [bridj](https://github.com/nativelibs4java/BridJ) - blazing fast Java / C / C++ interop
+ * [SLF4J](http://www.slf4j.org/) - Simple Logging Facade for Java
+ * [Jetbrains Annotations](https://github.com/JetBrains/java-annotations) - Annotations for JVM-based languages
+
 ## Support
-If you like this library please give me a star! It's very important for me 
-because it keeps me motivated to work on this library. Thank you!
+If you like this library give it a star!
