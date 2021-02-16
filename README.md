@@ -90,11 +90,11 @@ primaryStage.show();
 ``` 
 Then call the static method:
 ```java
-TaskbarProgressbar.showCustomProgress(primaryStage, 50, 100, TaskbarProgressbar.Type.NORMAL);
+TaskbarProgressbar.showCustomProgress(primaryStage, 0.5, TaskbarProgressbar.Type.NORMAL);
 ```
 
 Well, the code above looks okay, but it's not safe. This functionality isn't supported by every OS. 
-For example on a Linux Ubuntu system it will definitely throw a `RuntimeException` because it's only available on <b>Windows 7+</b>
+For example on a Linux system it will definitely throw an `UnsupportedSystemException` because it's only available on <b>Windows 7+</b>
 systems.<br> 
 <b>If you use static methods to create taskbar-progressbars you always have to check that the current OS 
 supports this functionality!</b> 
@@ -102,7 +102,7 @@ supports this functionality!</b>
 So let's correct the code:
 ```java
 if (TaskbarProgressbar.isSupported()) {
-    TaskbarProgressbar.showCustomProgress(primaryStage, 50, 100, TaskbarProgressbar.Type.NORMAL);
+    TaskbarProgressbar.showCustomProgress(primaryStage, 0.5, TaskbarProgressbar.Type.NORMAL);
 }
 ```
 ...now it is safe!
@@ -135,7 +135,7 @@ primaryStage.show();
 ```
 After that just use the created instance for the operations:
 ```
-progressbar.showCustomProgress(50, 100, TaskbarProgressbar.Type.NORMAL);
+progressbar.showCustomProgress(0.5, TaskbarProgressbar.Type.NORMAL);
 ```
 <b><i>Note: in this case to check that the OS supports this functionality is unnecessary
 because the object checks it automatically!</i></b>
@@ -174,10 +174,10 @@ progressbar.showFullPausedProgress();
 ## More screenshots
 Some more screenshots about what can you do with this library
 * A paused progress example:<br>
-Code: `progressbar.showCustomProgress(70, 100, TaskbarProgressbar.Type.PAUSED);`<br>
+Code: `progressbar.showCustomProgress(0.7, TaskbarProgressbar.Type.PAUSED);`<br>
 ![Paused progress](images/paused-progress.jpg)
 * An error progress example:<br>
-Code: `progressbar.showCustomProgress(40, 100, TaskbarProgressbar.Type.ERROR);`<br>b
+Code: `progressbar.showCustomProgress(0.4, TaskbarProgressbar.Type.ERROR);`<br>
 ![Paused progress](images/error-progress.jpg)
 
 ## Full demo
