@@ -42,7 +42,7 @@ Add the dependency:
 <dependency>
 	<groupId>com.github.Dansoftowner</groupId>
 	<artifactId>FXTaskbarProgressBar</artifactId>
-	<version>v11.3</version>
+	<version>v11.4</version>
 </dependency>
 ```
 
@@ -60,7 +60,7 @@ Add the dependency:
 ```groovy
 dependencies {
     //...
-    implementation 'com.github.Dansoftowner:FXTaskbarProgressBar:v11.3'
+    implementation 'com.github.Dansoftowner:FXTaskbarProgressBar:v11.4'
 }
 ```
 
