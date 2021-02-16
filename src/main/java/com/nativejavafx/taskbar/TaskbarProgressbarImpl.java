@@ -14,6 +14,8 @@
 
 package com.nativejavafx.taskbar;
 
+import com.nativejavafx.taskbar.exception.StageNotShownException;
+import com.nativejavafx.taskbar.exception.UnsupportedSystemException;
 import com.nativejavafx.taskbar.strategy.HWNDStrategy;
 import javafx.stage.Stage;
 import org.bridj.Pointer;
@@ -82,6 +84,7 @@ class TaskbarProgressbarImpl extends TaskbarProgressbar {
 
     @Override
     public void stopProgress() {
+        validate(stage.get());
         if (this.stage.get() != null) {
             setProgressState(stage.get(), Type.NO_PROGRESS);
         }
@@ -89,6 +92,7 @@ class TaskbarProgressbarImpl extends TaskbarProgressbar {
 
     @Override
     public void showIndeterminateProgress() {
+        validate(stage.get());
         if (this.stage.get() != null) {
             setProgressState(stage.get(), Type.INDETERMINATE);
         }
@@ -96,6 +100,7 @@ class TaskbarProgressbarImpl extends TaskbarProgressbar {
 
     @Override
     public void showCustomProgress(long startValue, long endValue, @NotNull Type type) {
+        validate(stage.get());
         if (this.stage.get() != null) {
             final Pointer<Integer> pointer = getPointer(stage.get());
             executor.execute(() -> {
@@ -107,12 +112,35 @@ class TaskbarProgressbarImpl extends TaskbarProgressbar {
 
     @Override
     public void setProgressType(@NotNull Type type) {
+        validate(stage.get());
         setProgressState(stage.get(), type);
     }
 
     @Override
     public void closeOperations() {
         executor.submit(() -> iTaskbarList3.get().Release());
+    }
+
+    private void validate(Stage stage) {
+        checkSystemSupported();
+        checkStageShown(stage);
+    }
+
+    private void checkStageShown(Stage stage) {
+        if (!stage.isShowing()) throw new StageNotShownException(
+                "The given Stage is not showing and therefore taskbar-progressbar can't be created"
+        );
+    }
+
+    private void checkSystemSupported() {
+        if (isNotSupported()) throw new UnsupportedSystemException(
+                String.format(
+                        "%s (system: %s, version: %s)",
+                        "Your system does not support taskbar-progressbar!",
+                        System.getProperty("os.name"),
+                        System.getProperty("os.version")
+                )
+        );
     }
 
     private static final class DaemonThread extends Thread {
