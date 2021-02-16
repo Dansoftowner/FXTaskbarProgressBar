@@ -134,7 +134,7 @@ Before any operation you have to show the Stage:
 primaryStage.show();
 ```
 After that just use the created instance for the operations:
-```
+```java
 progressbar.showCustomProgress(0.5, TaskbarProgressbar.Type.NORMAL);
 ```
 <b><i>Note: in this case to check that the OS supports this functionality is unnecessary
