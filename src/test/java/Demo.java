@@ -13,9 +13,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Demo extends Application {
-    public static void main(String[] args) {
-        launch(args);
-    }
 
     private TaskbarProgressbar taskbarProgressbar;
     private final ObjectProperty<TaskbarProgressbar.Type> actualSelectedType =
@@ -47,10 +44,10 @@ public class Demo extends Application {
     }
 
     private Slider buildSlider() {
-        Slider slider = new Slider(0, 100, 0);
+        Slider slider = new Slider(0, 1, 0);
 
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            taskbarProgressbar.showCustomProgress((long) slider.getValue(), (long) slider.getMax(), actualSelectedType.get());
+            taskbarProgressbar.showCustomProgress(newValue.doubleValue(), actualSelectedType.get());
         });
 
         return slider;
@@ -91,5 +88,9 @@ public class Demo extends Application {
             if (newValue) actualSelectedType.set(type);
         });
         return btn;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
