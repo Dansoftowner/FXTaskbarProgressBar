@@ -83,6 +83,19 @@ public abstract class TaskbarProgressbar {
     public abstract void showCustomProgress(long done, long max, @NotNull Type type);
 
     /**
+     * Shows custom progress on the taskbar
+     *
+     * @param progress A positive value between 0 and 1 indicates the percentage of progress where 0 is 0% and 1 is 100%.
+     * @param type     the type of the progress; mustn't be null
+     * @throws NullPointerException     if type is null
+     * @throws IllegalArgumentException if progress is less than 0
+     */
+    public void showCustomProgress(double progress, @NotNull Type type) {
+        if (progress < 0) throw new IllegalArgumentException("Progress can't be less than 0!");
+        showCustomProgress((long) Math.min(progress * 100, 100), 100, type);
+    }
+
+    /**
      * Sets the type of the progress
      *
      * @param type the type; mustn't be null
@@ -159,6 +172,18 @@ public abstract class TaskbarProgressbar {
      */
     public static void showCustomProgress(@NotNull Stage stage, long done, long max, @NotNull Type type) {
         getTaskbarProgressbarImpl(stage).showCustomProgress(done, max, type);
+    }
+
+    /**
+     * Shows a custom progress on the taskbar.
+     *
+     * @param stage the javaFX stage to show the progress on; mustn't be null
+     * @param progress  A positive value between 0 and 1 indicates the percentage of progress where 0 is 0% and 1 is 100%.
+     * @param type  the type of the progress; mustn't be null
+     * @throws NullPointerException if the stage or the type is null
+     */
+    public static void showCustomProgress(@NotNull Stage stage, double progress, @NotNull Type type) {
+        getTaskbarProgressbarImpl(stage).showCustomProgress(progress, type);
     }
 
     /**
