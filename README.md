@@ -1,4 +1,10 @@
 # ![JavaFXTaskbarProgressbar](images/Logo.png)
+<p align="center">
+<a href="https://jitpack.io/#Dansoftowner/FXTaskbarProgressBar"><img src="https://jitpack.io/v/Dansoftowner/FXTaskbarProgressBar.svg"></a>
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Dansoftowner/Fxtaskbarprogressbar">
+<img alt="GitHub issues" src="https://img.shields.io/github/issues/dansoftowner/fxtaskbarprogressbar">
+<img alt="GitHub" src="https://img.shields.io/github/license/Dansoftowner/fxtaskbarprogressbar">
+</p>
 <p align="center"><b>A clean and easy way to implement this amazing native Windows taskbar-progressbar functionality in javaFX</b></p>
 
 ## Background
@@ -63,6 +69,9 @@ dependencies {
     implementation 'com.github.Dansoftowner:FXTaskbarProgressBar:v11.4'
 }
 ```
+
+## Projects using `FXTaskbarProgressBar`
+If this library is used by your project, let me know in the `Discussions` and I will mention that in this section.
 
 ## How to use it Tutorial
 
@@ -181,10 +190,7 @@ Code: `progressbar.showCustomProgress(0.4, TaskbarProgressbar.Type.ERROR);`<br>
 ![Paused progress](images/error-progress.jpg)
 
 ## Full demo
-A full demo-example class is available [here](src/test/java/Demo.java). 
-
-## Projects using `FXTaskbarProgressBar`
-If this library is used by your project, let me know in the `Discussions` and I will mention that in this section.
+A full demo-example class is available [here](src/test/java/Demo.java).
 
 ## Source code
 This project has two important branches:
