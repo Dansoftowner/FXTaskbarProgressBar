@@ -1,11 +1,11 @@
 # ![JavaFXTaskbarProgressbar](images/Logo.png)
+<p align="center"><b>A clean and easy way to implement this amazing native Windows taskbar-progressbar functionality in javaFX</b></p>
 <p align="center">
 <a href="https://jitpack.io/#Dansoftowner/FXTaskbarProgressBar"><img src="https://jitpack.io/v/Dansoftowner/FXTaskbarProgressBar.svg"></a>
 <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Dansoftowner/Fxtaskbarprogressbar">
 <img alt="GitHub issues" src="https://img.shields.io/github/issues/dansoftowner/fxtaskbarprogressbar">
 <img alt="GitHub" src="https://img.shields.io/github/license/Dansoftowner/fxtaskbarprogressbar">
 </p>
-<p align="center"><b>A clean and easy way to implement this amazing native Windows taskbar-progressbar functionality in javaFX</b></p>
 
 ## Background
 Since Windows 7 there is a taskbar-progressbar feature in Windows systems
