@@ -73,6 +73,8 @@ dependencies {
 ## Projects using `FXTaskbarProgressBar`
 If this library is used by your project, let me know in the `Discussions` and I will mention that in this section.
 
+[Boomega](https://github.com/Dansoftowner/Boomega) - A modern book explorer & catalog application
+
 ## How to use it Tutorial
 
 ### 0. Types of progressbar
